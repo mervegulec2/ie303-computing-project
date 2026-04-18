@@ -1,0 +1,88 @@
+Q3: Image Segmentation Using IP
+========================================
+🎯 UNIQUE COMBINATION (for 5 bonus points):
+- Background Color: Specific to image (White, Red, Green, Blue)
+- Distance Metric: Chebyshev Distance (L∞ norm)
+- Foreground Penalty: Exponential decay + linear term
+- Background Penalty: Quadratic + linear term
+- Smoothness Penalty: Gaussian kernel
+
+
+====================
+PROCESSING: white.png
+====================
+Segmenting white.png using IP...
+Image size: 13×20 = 260 pixels
+Total variables: 260 binary + smoothness variables
+Restricted license - for non-production use only - expires 2026-11-23
+Precomputing penalties...
+Building objective function...
+Adding smoothness constraints...
+Solving IP model...
+Segmentation mask saved to: results/segmentation_mask_white.png
+IoU Score for white.png: 1.0000
+
+====================
+PROCESSING: red.png
+====================
+Segmenting red.png using IP...
+Image size: 13×20 = 260 pixels
+Total variables: 260 binary + smoothness variables
+Precomputing penalties...
+Building objective function...
+Adding smoothness constraints...
+Solving IP model...
+Segmentation mask saved to: results/segmentation_mask_red.png
+IoU Score for red.png: 1.0000
+
+====================
+PROCESSING: green.png
+====================
+Segmenting green.png using IP...
+Image size: 13×20 = 260 pixels
+Total variables: 260 binary + smoothness variables
+Precomputing penalties...
+Building objective function...
+Adding smoothness constraints...
+Solving IP model...
+Segmentation mask saved to: results/segmentation_mask_green.png
+IoU Score for green.png: 1.0000
+
+====================
+PROCESSING: blue.png
+====================
+Segmenting blue.png using IP...
+Image size: 13×20 = 260 pixels
+Total variables: 260 binary + smoothness variables
+Precomputing penalties...
+Building objective function...
+Adding smoothness constraints...
+Solving IP model...
+Segmentation mask saved to: results/segmentation_mask_blue.png
+IoU Score for blue.png: 1.0000
+
+========================================
+PENALTY FUNCTIONS EXPLANATION
+========================================
+Foreground Penalty f(i,j):
+  High when pixel close to background → encourages background labeling
+  Formula: 100*exp(-5*d) + 10*(1-d)
+
+Background Penalty b(i,j):
+  High when pixel far from background → encourages foreground labeling
+  Formula: 50*d² + 5*d
+
+Smoothness Penalty s(i,j,u,v):
+  High when neighboring pixels have similar colors
+  → discourages cutting between similar regions
+  Formula: 30*exp(-2*d²) + 2*(1-d)
+
+========================================
+GIGO PRINCIPLE EXPLANATION
+========================================
+Even with 0.00% optimality gap, IoU < 1.0 because:
+1. Distance metric choice affects color similarity perception
+2. Penalty functions may not perfectly capture 'foreground-ness'
+3. IP finds mathematical optimum, but problem may be ill-posed
+4. No penalty function perfectly models human perception
+5. Color space quantization and noise affect boundary detection

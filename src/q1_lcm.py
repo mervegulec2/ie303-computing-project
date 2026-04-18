@@ -139,19 +139,28 @@ def main():
     print("Q1: Least Common Multiple (LCM) Calculation")
     print("=" * 50)
 
+    # (a) Static set [8, 12, 14, 15]
+    print("(a) Specific set: {8, 12, 14, 15}")
+    S = [8, 12, 14, 15]
+    lcm_s_ip = solve_lcm_ip(S)
+    lcm_s_python = compute_lcm_python(S)
+    print(f"IP Model LCM for S: {lcm_s_ip}")
+    print(f"Python LCM for S: {lcm_s_python}")
+    print(f"Match: {'✓' if lcm_s_ip == lcm_s_python else '✗'}")
+
     # (b) Generate random set D
-    print("(b) Generating random set D...")
+    print("\n(b) Generating random set D...")
     D = generate_random_set(seed=2026, n=10, min_val=-100, max_val=100, exclude={0, -1, 1})
     print(f"Generated set D: {D}")
 
     # (c) Solve using IP model
-    print("\n(c) Solving LCM using Integer Programming...")
+    print("\n(c) Solving LCM for set D using Integer Programming...")
     start_time_ip = time.time()
     try:
         lcm_ip = solve_lcm_ip(D)
         time_ip = time.time() - start_time_ip
         print(f"IP Model LCM: {lcm_ip}")
-        print(f"IP solve time: {time_ip:.4f} seconds")
+        print(f"IP solve time: {time_ip:.6f} seconds")
     except Exception as e:
         print(f"IP Model failed: {e}")
         return

@@ -1,0 +1,40 @@
+Q1: Least Common Multiple (LCM) Calculation
+==================================================
+(a) Specific set: {8, 12, 14, 15}
+Restricted license - for non-production use only - expires 2026-11-23
+IP Model LCM for S: 840
+Python LCM for S: 840
+Match: ✓
+
+(b) Generating random set D...
+Generated set D: [-70, -19, 28, 31, 65, -74, -43, 53, 59, 42]
+
+(c) Solving LCM for set D using Integer Programming...
+IP Model LCM: 15999484808580
+IP solve time: 0.000281 seconds
+
+Verifying with Python's built-in LCM function...
+Python LCM: 15999484808580
+Python compute time: 0.000002 seconds
+✓ Results match!
+
+(d) Execution Time Comparison:
+IP solve time: 0.0003 seconds
+Python compute time: 0.000002 seconds
+Relative difference: 146.38x
+Python's built-in LCM is orders of magnitude faster!
+This is expected because Python uses Euclid's algorithm,
+a specialized mathematical algorithm, while IP solvers
+are general-purpose optimization tools that explore
+the entire feasible region.
+
+(e) Finding GCD using LCM identity:
+For two numbers a₁, a₂:
+LCM(a₁, a₂) = |a₁ × a₂| / GCD(a₁, a₂)
+Therefore: GCD(a₁, a₂) = |a₁ × a₂| / LCM(a₁, a₂)
+
+Using our IP model:
+- We can compute LCM(a₁, a₂) using the IP formulation
+- Then compute GCD = |a₁ × a₂| / LCM
+- This leverages the same divisibility constraints
+- The IP model ensures we find the minimal k divisible by both |a₁| and |a₂|

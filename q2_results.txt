@@ -1,0 +1,77 @@
+Q2: Magnetic Field Puzzle
+==============================
+Solving the specific instance from Figure 1...
+
+Figure 1 Domino Layout:
++---+---+---+---+---+---+
+| 1 | 1 | 2 | 3 | 3 | 4 |
++---+---+---+---+---+---+
+| 5 | 6 | 2 | 7 | 8 | 4 |
++---+---+---+---+---+---+
+| 5 | 6 | 9 | 7 | 8 | 10 |
++---+---+---+---+---+---+
+| 11 | 11 | 9 | 12 | 12 | 10 |
++---+---+---+---+---+---+
+| 13 | 13 | 14 | 14 | 15 | 15 |
++---+---+---+---+---+---+
+Row + counts: [2, 3, 2, 2, 2]
+Row - counts: [2, 3, 3, 1, 2]
+Col + counts: [2, 2, 2, 2, 2, 1]
+Col - counts: [2, 2, 2, 1, 2, 2]
+Restricted license - for non-production use only - expires 2026-11-23
+
+Solved Figure 1 Magnetic Field Puzzle:
++---+---+---+---+---+---+
+| x | x | - | + | - | + |
++---+---+---+---+---+---+
+| + | - | + | - | + | - |
++---+---+---+---+---+---+
+| - | + | - | + | - | x |
++---+---+---+---+---+---+
+| + | - | + | x | x | x |
++---+---+---+---+---+---+
+| - | + | x | x | + | - |
++---+---+---+---+---+---+
+
+REAL PUZZLE INSTRUCTIONS
+1. Email TA Utku to get your unique puzzle instance.
+2. Provide the domino partition, plus counts, and minus counts.
+3. Use solve_magnetic_field_puzzle() with the TA instance.
+Q2: Magnetic Field Puzzle
+==============================
+Solving the specific instance from Figure 1...
+
+Figure 1 Domino Layout:
++---+---+---+---+---+---+
+| 1 | 1 | 2 | 3 | 3 | 4 |
++---+---+---+---+---+---+
+| 5 | 6 | 2 | 7 | 8 | 4 |
++---+---+---+---+---+---+
+| 5 | 6 | 9 | 7 | 8 | 10 |
++---+---+---+---+---+---+
+| 11 | 11 | 9 | 12 | 12 | 10 |
++---+---+---+---+---+---+
+| 13 | 13 | 14 | 14 | 15 | 15 |
++---+---+---+---+---+---+
+Row + counts: [2, 3, 2, 2, 2]
+Row - counts: [2, 3, 3, 1, 2]
+Col + counts: [2, 2, 2, 2, 2, 1]
+Col - counts: [2, 2, 2, 1, 2, 2]
+
+Solved Figure 1 Magnetic Field Puzzle:
++---+---+---+---+---+---+
+| x | x | - | + | - | + |
++---+---+---+---+---+---+
+| + | - | + | - | + | - |
++---+---+---+---+---+---+
+| - | + | - | + | - | x |
++---+---+---+---+---+---+
+| + | - | + | x | x | x |
++---+---+---+---+---+---+
+| - | + | x | x | + | - |
++---+---+---+---+---+---+
+
+REAL PUZZLE INSTRUCTIONS
+1. Email TA Utku to get your unique puzzle instance.
+2. Provide the domino partition, plus counts, and minus counts.
+3. Use solve_magnetic_field_puzzle() with the TA instance.

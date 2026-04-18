@@ -1,0 +1,31 @@
+Q4a: Water Jug Problem - Graph-based Approach (Dijkstra)
+============================================================
+Problem: Get exactly 4 gallons using 3L and 5L jugs
+Each action takes 49 seconds
+Bomb timer: 5 minutes = 300 seconds
+
+Solving with Dijkstra's algorithm...
+✅ Solution found!
+Total actions: 6
+Total time: 294 seconds = 4.9 minutes
+Bomb timer: 5 minutes = 300 seconds
+✅ They disarm the bomb in time!
+
+Optimal sequence of actions:
+----------------------------------------
+Initial state: (0, 0)
+Step 1: Pour 3 gallons from 5-gallon jug to 3-gallon jug
+         New state: (0, 5)
+Step 2: Empty 3-gallon jug completely
+         New state: (3, 2)
+Step 3: Pour 2 gallons from 5-gallon jug to 3-gallon jug
+         New state: (0, 2)
+Step 4: Fill 5-gallon jug completely
+         New state: (2, 0)
+Step 5: Pour 1 gallons from 5-gallon jug to 3-gallon jug
+         New state: (2, 5)
+Step 6: Goal reached
+         New state: (3, 4)
+
+Final state: (3, 4)
+Goal achieved: 4 gallons in 5-gallon jug

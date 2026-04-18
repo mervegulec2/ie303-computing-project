@@ -1,0 +1,29 @@
+IE303 Computing Project - Group 13 Reflection
+============================================
+
+1. Project Summary
+------------------
+This project involved solving a series of optimization and modeling problems using Integer Programming (Gurobi), Dynamic Programming (Value Iteration), and Graph Algorithms (Dijkstra). Key tasks included:
+- Calculating Least Common Multiples (LCM) and Greatest Common Divisors (GCD) using IP models.
+- Solving the Magnetic Field Puzzle (a grid-based constraint satisfaction problem).
+- Performing Image Segmentation using IP with custom penalty functions.
+- Solving the 3/5-gallon Water Jug riddle using both graph-based and dynamic programming approaches.
+
+2. Learning Outcomes
+--------------------
+- Integer Programming: We learned how to formulate complex logical constraints (adjacency in magnets, pixel segmentation) into linear constraints.
+- Value Iteration: Implementing the SSP framework for the water jug problem provided deep insight into stochastic shortest path modeling and iterative convergence.
+- Modeling Trade-offs: In the LCM vs math.lcm comparison, we observed that while IP is generic and powerful, specialized algorithms (like Euclid's) are significantly faster for specific mathematical problems.
+- Image Processing: We explored how distance metrics (Chebyshev) and penalty functions affect segmentation results and the concept of GIGO (Garbage In, Garbage Out) in optimization.
+
+3. Challenges Overcome
+----------------------
+- Linearizing absolute differences: We successfully linearized terms like |x_i - x_j| for the image segmentation model. 
+- State Space Representation: Mapping the water jug configurations to states for value iteration required careful indexing and transition logic.
+
+4. Conclusion
+-------------
+The project successfully demonstrated the versatility of optimization techniques in solving diverse real-world and mathematical problems. All models reached optimal solutions, and the water jug riddle was solved in time to "disarm the bomb" (under 5 minutes).
+
+Group Members: Group 13
+Date: 2026-04-18

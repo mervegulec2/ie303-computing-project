@@ -107,19 +107,24 @@ def print_grid(grid, title="Grid"):
         print("+" + "---+" * n)
 
 
-def generate_example_puzzle():
+def generate_figure1_puzzle():
+    """
+    Returns the domino layout and counts for Figure 1 from the assignment.
+    """
+    # 5x6 grid of domino IDs
     domino_ids = [
-        [1, 1],
-        [2, 2],
+        [1,  1,  2,  3,  3,  4],
+        [5,  6,  2,  7,  8,  4],
+        [5,  6,  9,  7,  8,  10],
+        [11, 11, 9,  12, 12, 10],
+        [13, 13, 14, 14, 15, 15]
     ]
 
-    # A valid 2x2 example with a consistent solution:
-    # top domino: + -
-    # bottom domino: - +
-    row_plus = [1, 1]
-    row_minus = [1, 1]
-    col_plus = [1, 1]
-    col_minus = [1, 1]
+    # Solution counts from Figure 1(b)
+    row_plus = [2, 3, 2, 2, 2]
+    row_minus = [2, 3, 3, 1, 2]
+    col_plus = [2, 2, 2, 2, 2, 1]
+    col_minus = [2, 2, 2, 1, 2, 2]
 
     return domino_ids, row_plus, col_plus, row_minus, col_minus
 
@@ -127,11 +132,11 @@ def generate_example_puzzle():
 def main():
     print("Q2: Magnetic Field Puzzle")
     print("=" * 30)
-    print("This implementation solves the actual Magnetic Field Puzzle as described in the project.")
-    print("For the real assignment, substitute the TA-provided puzzle instance below.")
+    print("Solving the specific instance from Figure 1...")
 
-    domino_ids, row_plus, col_plus, row_minus, col_minus = generate_example_puzzle()
-    print_grid(np.array(domino_ids, dtype=int), title="Example Domino Layout")
+    domino_ids, row_plus, col_plus, row_minus, col_minus = generate_figure1_puzzle()
+
+    print_grid(np.array(domino_ids, dtype=int), title="Figure 1 Domino Layout")
     print(f"Row + counts: {row_plus}")
     print(f"Row - counts: {row_minus}")
     print(f"Col + counts: {col_plus}")
@@ -139,9 +144,9 @@ def main():
 
     solution = solve_magnetic_field_puzzle(domino_ids, row_plus, col_plus, row_minus, col_minus)
     if solution is not None:
-        print_grid(solution, title="Solved Magnetic Field Puzzle")
+        print_grid(solution, title="Solved Figure 1 Magnetic Field Puzzle")
     else:
-        print("No solution found for the example puzzle.")
+        print("No solution found for the Figure 1 puzzle.")
 
     print("\nREAL PUZZLE INSTRUCTIONS")
     print("1. Email TA Utku to get your unique puzzle instance.")

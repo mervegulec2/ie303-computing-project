@@ -277,6 +277,16 @@ def main():
     print(f"\nFinal state: {optimal_path[-1][0]}")
     print(f"Goal achieved: {target} gallons in {'3-gallon' if optimal_path[-1][0].jug3 == target else '5-gallon'} jug")
 
+    # Output Value Function Table (for report)
+    print("\n" + "="*50)
+    print("VALUE FUNCTION TABLE (V*)")
+    print("-" * 50)
+    print(f"{'State (3, 5)':<15} | {'Value V*(s)':<15}")
+    print("-" * 35)
+    for state in sorted(state_to_index.keys(), key=lambda s: (s.jug3, s.jug5)):
+        idx = state_to_index[state]
+        print(f"{str(state):<15} | {V[idx]:<15.2f}")
+
     # Verify against Dijkstra result
     print("\n" + "="*50)
     print("VERIFICATION: Comparing with Dijkstra's algorithm result")

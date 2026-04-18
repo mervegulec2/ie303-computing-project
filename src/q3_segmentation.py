@@ -327,65 +327,72 @@ def main():
 
     # Choose unique combination for bonus points
     print("🎯 UNIQUE COMBINATION (for 5 bonus points):")
-    print("- Background Color: White (255, 255, 255)")
+    print("- Background Color: Specific to image (White, Red, Green, Blue)")
     print("- Distance Metric: Chebyshev Distance (L∞ norm)")
     print("- Foreground Penalty: Exponential decay + linear term")
     print("- Background Penalty: Quadratic + linear term")
     print("- Smoothness Penalty: Gaussian kernel")
     print()
 
-    # Parameters
-    bg_color = (255, 255, 255)  # White background
-    distance_func = chebyshev_distance
+    # Define background colors for each image
+    images_to_process = {
+        "white.png": (255, 255, 255),
+        "red.png": (255, 0, 0),
+        "green.png": (0, 255, 0),
+        "blue.png": (0, 0, 255)
+    }
 
-    # Image selection - let's use the white background image
-    image_path = "data/images/white.png"
-    print(f"Loading image: {image_path}")
+    results_summary = []
 
-    try:
-        image_array = load_image(image_path)
-        height, width = image_array.shape[:2]
-        print(f"Image loaded: {width}×{height} pixels")
-    except Exception as e:
-        print(f"Error loading image: {e}")
-        return
+    for img_name, bg_color in images_to_process.items():
+        image_path = os.path.join("data", "images", img_name)
+        print(f"\n{'='*20}")
+        print(f"PROCESSING: {img_name}")
+        print(f"{'='*20}")
 
-    # Segment image
-    print("\nSegmenting image using IP...")
-    try:
-        segmentation = segment_image_ip(
-            image_array=image_array,
-            bg_color=bg_color,
-            distance_func=distance_func,
-            foreground_penalty_func=custom_foreground_penalty,
-            background_penalty_func=custom_background_penalty,
-            smoothness_penalty_func=custom_smoothness_penalty
-        )
-    except Exception as e:
-        print(f"Error in segmentation: {e}")
-        return
+        try:
+            image_array = load_image(image_path)
+            height, width = image_array.shape[:2]
+        except Exception as e:
+            print(f"Error loading {img_name}: {e}")
+            continue
 
-    # Save result
-    output_path = "results/segmentation_mask.png"
-    save_segmentation_mask(segmentation, output_path)
+        # Segment image
+        print(f"Segmenting {img_name} using IP...")
+        try:
+            segmentation = segment_image_ip(
+                image_array=image_array,
+                bg_color=bg_color,
+                distance_func=chebyshev_distance,
+                foreground_penalty_func=custom_foreground_penalty,
+                background_penalty_func=custom_background_penalty,
+                smoothness_penalty_func=custom_smoothness_penalty
+            )
+        except Exception as e:
+            print(f"Error in segmentation of {img_name}: {e}")
+            continue
 
-    # Calculate IoU (we don't have ground truth, so we'll simulate)
-    print("\nIoU Calculation:")
-    print("Note: Since we don't have ground truth mask, we'll demonstrate")
-    print("the IoU calculation with a simulated ground truth.")
+        # Save result
+        out_root = img_name.split('.')[0]
+        output_path = f"results/segmentation_mask_{out_root}.png"
+        save_segmentation_mask(segmentation, output_path)
 
-    # For demonstration, create a simple ground truth
-    # Assume foreground is the "soldier" part - let's say non-white pixels
-    simulated_gt = np.any(image_array < 250, axis=2).astype(int)  # Non-white pixels
+        # Calculate IoU against simulated ground truth (non-background pixels)
+        # Using a small tolerance for "non-background"
+        diff = np.abs(image_array.astype(int) - np.array(bg_color).astype(int))
+        max_diff = np.max(diff, axis=2)
+        simulated_gt = (max_diff > 10).astype(int)
 
-    iou_score = calculate_iou(segmentation, simulated_gt)
-    print(".4f")
+        iou_score = calculate_iou(segmentation, simulated_gt)
+        print(f"IoU Score for {img_name}: {iou_score:.4f}")
+        results_summary.append(f"{img_name}: {iou_score:.4f}")
 
-    # Save IoU result
-    with open("results/iou.txt", "w") as f:
-        f.write(f"IoU Score: {iou_score:.4f}\n")
-        f.write("Note: This is calculated against simulated ground truth\n")
-        f.write("(non-white pixels assumed to be foreground)\n")
+    # Save summary results
+    with open("results/iou_summary.txt", "w") as f:
+        f.write("Image Segmentation IoU Scores (Simulated Ground Truth)\n")
+        f.write("=" * 50 + "\n")
+        for line in results_summary:
+            f.write(line + "\n")
 
     print("\n" + "="*40)
     print("PENALTY FUNCTIONS EXPLANATION")

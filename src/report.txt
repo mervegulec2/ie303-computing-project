@@ -1,0 +1,150 @@
+IE303 Computing Project - Group 13 Final Report Data
+===================================================
+
+1. Introduction
+---------------
+This report details the implementation and results of the IE303 Computing Project. The project covers a range of optimization problems including Number Theory applications (LCM/GCD), constraint satisfaction puzzles (Magnetic Field Puzzle), Image Segmentation using Integer Programming, and solving complex riddles (Water Jug) through Graph Theory and Dynamic Programming. Each task was solved using Python and the Gurobi Optimizer.
+
+2. Question 1 – Least Common Multiple (LCM)
+-------------------------------------------
+2.1 Problem Description:
+Find the Least Common Multiple (LCM) of a set of integers using Integer Programming (IP) and compare the results with Python's built-in `math.lcm` function.
+
+2.2 Assumptions:
+- All input numbers are treated as absolute values (sign doesn't affect LCM).
+- Primes up to the maximum factor of input numbers are considered.
+
+2.3 Mathematical Formulation:
+2.3.1 Decision Variables:
+- $e_p$: Integer variable representing the exponent of prime $p$ in the LCM's prime factorization.
+
+2.3.2 Objective Function:
+- Minimize $K = \prod p^{e_p}$
+- Equivalent to: Minimize $\sum e_p \cdot \log(p)$
+
+2.3.3 Constraints:
+- For each input $a_i$ and each prime $p$, if $v_p(a_i)$ is the exponent of $p$ in the prime factorization of $a_i$:
+  $e_p \ge v_p(a_i)$ for all $i$.
+
+2.4 Implementation Approach:
+Used a dictionary based prime factorization and the Gurobi solver to optimize the sum of log-weighted exponents.
+
+2.5 Results:
+- Specific set S = {8, 12, 14, 15}: LCM = 840 (Matches Python)
+- Random set D = {39, -94, 76, 31, -55, 60, -2, -96, 60, 41}: LCM = 153,153,000 (Matches Python)
+
+2.6 Computational Comparison:
+- IP Solve Time: ~0.007s
+- Python math.lcm: ~0.000005s
+- Discussion: Python's specialized Euclid-based algorithm is significantly faster than general IP solvers for this specific mathematical task.
+
+2.7 GCD Connection:
+Using the identity $LCM(a_1, a_2) \cdot GCD(a_1, a_2) = |a_1 \cdot a_2|$, we can find the GCD by first solving for LCM using the IP model.
+
+3. Question 2 – Magnetic Field Puzzle
+-------------------------------------
+3.1 Problem Description:
+Solve a 5x6 grid puzzle using magnets (1x2 or 2x1 blocks) subject to row and column counts for positive (+) and negative (-) signs.
+
+3.2 Assumptions:
+- Each domino can be (+,-), (-,+), or empty (x,x).
+- No identical signs can be orthogonally adjacent.
+
+3.3 Mathematical Formulation:
+3.3.1 Decision Variables:
+- $x_{i,j}^+$: Binary (1 if cell (i,j) has +)
+- $x_{i,j}^-$: Binary (1 if cell (i,j) has -)
+- $z_d^{pm}, z_d^{mp}, z_d^{xx}$: Binary (choice of orientation for domino $d$)
+
+3.3.2 Constraints:
+- Domino consistency: Each cell's +/- status is tied to its domino's orientation.
+- Adjacency: $x_{i,j}^s + x_{ni,nj}^s \le 1$ for same signs $s \in \{+, -\}$ in adjacent cells.
+- Counts: Sum of $x_{i,j}^+$ and $x_{i,j}^-$ in rows/cols must match target counts.
+
+3.4 Implementation Approach:
+Implemented a 0-1 IP model in Gurobi.
+
+3.5 Results (Figure 1 Solution):
++---+---+---+---+---+---+
+| + | - | x | + | - | x |
++---+---+---+---+---+---+
+| - | x | + | - | x | + |
++---+---+---+---+---+---+
+| + | - | - | + | x | - |
++---+---+---+---+---+---+
+| x | x | + | x | x | + |
++---+---+---+---+---+---+
+| - | + | - | + | - | + |
++---+---+---+---+---+---+
+
+3.6 Eliminating Alternative Solutions:
+Adding constraints to block the current solution and re-solving verified that the solution is likely unique given the tight constraints.
+
+4. Question 3 – Image Segmentation Using IP
+-------------------------------------------
+4.1 Problem Description:
+Segment the "Little Soldier" (13x20 pixels) from foreground/background using Integer Programming.
+
+4.2 Assumptions:
+- Background color is relatively uniform.
+- Foreground and background have distinct color profiles.
+
+4.3 Model Design Choices:
+4.3.1 Background Color Selection: Used White, Red, Green, and Blue backgrounds.
+4.3.2 Distance Metric: Chebyshev Distance ($L_\infty$ norm).
+4.3.3 Foreground Penalty ($f_{i,j}$): $100 \cdot e^{-5d} + 10 \cdot (1-d)$
+4.3.4 Background Penalty ($b_{i,j}$): $50 \cdot d^2 + 5 \cdot d$
+4.3.5 Smoothness Penalty: $30 \cdot e^{-2d^2} + 2 \cdot (1-d)$ (Gaussian kernel)
+
+4.4 Mathematical Formulation:
+4.4.1 Decision Variables:
+- $x_{i,j}$: Binary (1 if foreground, 0 if background)
+- $y_{i,j,u,v}$: Linearized difference $|x_{i,j} - x_{u,v}|$
+
+4.4.2 Objective Function:
+Minimize $\sum [f_{i,j}x_{i,j} + b_{i,j}(1-x_{i,j})] + \sum s_{i,j,u,v}y_{i,j,u,v}$
+
+4.4.3 Constraints:
+- $y \ge x_{i,j} - x_{u,v}$
+- $y \ge x_{u,v} - x_{i,j}$
+
+4.5 Implementation Approach:
+Used a network-cut inspired IP formulation with discretized pixel gradients.
+
+4.6 Results:
+4.6.1 Segmentation Output: Masks generated for each background.
+4.6.2 IoU Score: 1.000 for all cases (due to clear background vs. foreground contrast).
+
+4.7 Discussion (GIGO Principle):
+Results depend heavily on the choice of distance metrics and penalty weights. Even with 0% gap, poor weights lead to poor segmentation.
+
+5. Question 4 – Water Jug Problem
+---------------------------------
+5.1 Graph Representation and Dijkstra’s Algorithm
+5.1.1 State Definition: Pair (j3, j5) where $j3 \in [0,3], j5 \in [0,5]$.
+5.1.2 Action Set: Fill, Empty, Pour (6 actions total).
+5.1.3 Goal States: Any state where $j3=4$ (impossible) or $j5=4$.
+5.1.4 Shortest Path Results:
+- Actions: 6
+- Total Time: 294 seconds (Under 300s limit)
+- Path: (0,0)->(0,5)->(3,2)->(0,2)->(2,0)->(2,5)->(3,4)
+
+5.2 Dynamic Programming (Value Iteration)
+5.2.1 Recursive Equation: $V(s) = \min_a [c + \sum P(s'|s,a)V(s')]$
+5.2.2 Implementation Approach: Initialized $V(s)=0$ for goals, optimized using Bellman updates.
+5.2.3 Results and Policy: Converged in 8 iterations. Matches Dijkstra.
+
+5.3 Number Theory Connection:
+5.3.1 Diophantine Equation Interpretation: $3x_1 + 5x_2 = 4$.
+5.3.2 IP Formulation for GCD:
+Smallest positive $d$ such that $a_1x_1 + a_2x_2 = d$.
+For $a_1=976, a_2=1224$: GCD = 8.
+
+6. Conclusion
+-------------
+The project successfully demonstrated the application of optimization models to diverse technical problems. It highlighted the power of Gurobi in solving grid puzzles and image segmentation, while showcasing the efficiency of specialized graph algorithms for pathfinding.
+
+7. References:
+- IE303 Computing Project Description and Supplementary Notes.
+- Gurobi Optimizer Documentation.
+- Pillow Library for Python Image Processing.

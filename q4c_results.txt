@@ -1,0 +1,48 @@
+Q4c: GCD via Integer Programming
+========================================
+Problem: Find GCD(976, 1224) using Integer Programming
+Approach: Linear Diophantine Equation + Bézout's Identity
+
+Solving GCD via Integer Programming...
+Restricted license - for non-production use only - expires 2026-11-23
+✅ GCD found via Integer Programming!
+GCD(976, 1224) = 8
+Bézout coefficients: x1 = 1145, x2 = -913
+Verification: 976×1145 + 1224×-913 = 8
+
+Verifying with Python's math.gcd...
+Python GCD: 8
+✅ Results match!
+
+============================================================
+CONNECTION: Water Jug Problem ↔ Linear Diophantine Equations
+============================================================
+The water jug problem is mathematically equivalent to solving:
+a₁×x₁ + a₂×x₂ = b
+
+Where:
+- a₁, a₂ are jug capacities (3 and 5 gallons)
+- b is the target amount (4 gallons)
+- x₁, x₂ are integer variables representing:
+  * x₁: net effect of operations on the 3-gallon jug
+  * x₂: net effect of operations on the 5-gallon jug
+
+Each pouring operation corresponds to adding/subtracting jug capacities:
+- Filling jug: +capacity
+- Emptying jug: -current_amount
+- Pouring A→B: -amount_from_A, +amount_to_B
+
+The equation has integer solutions iff b is a multiple of GCD(a₁,a₂).
+For a₁=3, a₂=5: GCD(3,5)=1, so any integer b is achievable.
+For a₁=976, a₂=1224: we need to find GCD(976,1224).
+
+============================================================
+SUMMARY
+============================================================
+GCD(976, 1224) = 8
+
+Key insights:
+1. Water jug problems ≡ Linear Diophantine Equations
+2. Solutions exist iff target is multiple of GCD
+3. Bézout's Identity provides constructive proof
+4. IP can find GCD by minimizing the common divisor d

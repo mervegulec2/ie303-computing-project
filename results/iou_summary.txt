@@ -1,0 +1,6 @@
+Image Segmentation IoU Scores (Simulated Ground Truth)
+==================================================
+white.png: 1.0000
+red.png: 1.0000
+green.png: 1.0000
+blue.png: 1.0000
