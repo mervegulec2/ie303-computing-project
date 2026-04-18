@@ -1,0 +1,3 @@
+[Ground Truth Mask Placeholder]
+This file should contain the mask.png image (ground truth mask for validation).
+Replace this with the actual image file.
