@@ -1,0 +1,410 @@
+\documentclass[11pt,a4paper]{article}
+
+% -------------------- PACKAGES --------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{float}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+
+% -------------------- PAGE SETTINGS --------------------
+\geometry{
+    a4paper,
+    left=1in,
+    right=1in,
+    top=0.85in,
+    bottom=0.85in
+}
+
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% -------------------- HYPERREF --------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+% -------------------- HEADER/FOOTER --------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\fancyhead[L]{IE 303 Computing Project}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% -------------------- TITLE FORMATTING --------------------
+\titleformat{\section}[display]
+  {\normalfont\bfseries\Large}
+  {}{0pt}{}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries\large}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\normalsize}
+  {\thesubsubsection}{1em}{}
+
+% -------------------- TOC FORMATTING --------------------
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsubsecfont}{\normalfont}
+
+% -------------------- DOCUMENT --------------------
+\begin{document}
+
+% ==================== COVER PAGE ====================
+\begin{titlepage}
+    \centering
+
+    \vspace*{0.2cm}
+    \includegraphics[width=0.48\textwidth]{bilkent-img.png}
+
+    \vspace{0.6cm}
+
+    {\LARGE\bfseries Bilkent University\par}
+
+    \vspace{0.5cm}
+
+    {\Large\bfseries IE 303 -- Modeling and Methods in Optimization\par}
+    \vspace{0.15cm}
+    {\Large\bfseries Computing Project\par}
+
+    \vspace{1.1cm}
+
+    \begin{flushleft}
+        {\large\bfseries Team Members}
+
+        \vspace{0.45cm}
+
+        {\large Emine Noor - [Student ID]}\\[0.18cm]
+        {\large Merve Güleç - 22103231}\\[0.6cm]
+
+        {\large Group: 13}\\[0.35cm]
+        {\large Section: 2}\\[0.35cm]
+        {\large Instructor: Ayşenur Karagöz}
+    \end{flushleft}
+
+    \vfill
+
+    {\large Spring 2025--2026\par}
+    \vspace{0.1cm}
+    {\large Submission Date: 08.05.2026\par}
+
+\end{titlepage}
+
+% ==================== TABLE OF CONTENTS ====================
+\tableofcontents
+\newpage
+
+% ==================== INTRODUCTION ====================
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+This report details the implementation and results of the IE303 Computing Project. The project covers a range of optimization problems including Number Theory applications such as the least common multiple and greatest common divisor, a constraint satisfaction puzzle in the form of the Magnetic Field Puzzle, image segmentation through Integer Programming, and the Water Jug Riddle solved using both Graph Theory and Dynamic Programming.
+
+Each task required a different modeling perspective. Some parts focused on pure Integer Programming, while others highlighted the role of shortest path algorithms, state-space representations, and infinite-horizon recursive decision models. All tasks were implemented in Python, and optimization-based components were solved using the Gurobi Optimizer.
+
+% ==================== QUESTION 0 ====================
+\section*{Question 0: Installation of gurobipy}
+\addcontentsline{toc}{section}{Question 0: Installation of gurobipy}
+
+\subsection*{Installation Summary}
+
+The \texttt{gurobipy} package was successfully installed and tested before proceeding to the remaining questions. Since the project explicitly requires computational implementation using the Gurobi Python API, verifying the environment setup was a necessary first step. A small test model was created and solved in Python to verify that the solver, Python environment, and package dependencies were working correctly.
+
+% ==================== QUESTION 1 ====================
+\section*{Question 1: Least Common Multiple (LCM)}
+\addcontentsline{toc}{section}{Question 1: Least Common Multiple (LCM)}
+
+\subsection*{Problem Description}
+
+The goal of this question is to find the Least Common Multiple (LCM) of a set of integers by using an Integer Programming model and then compare the outcome with Python's built-in \texttt{math.lcm} function.
+
+\subsection*{Assumptions}
+
+The following assumptions were adopted in our implementation:
+\begin{itemize}
+    \item All input numbers were treated through their absolute values, since the sign of an integer does not affect divisibility in the LCM computation.
+    \item Prime factors up to the maximum relevant factor of the input set were considered.
+    \item The LCM was enforced to be positive.
+\end{itemize}
+
+\subsection*{Mathematical Formulation}
+
+\subsubsection*{Decision Variables}
+
+Let $e_p$ denote an integer decision variable representing the exponent of prime $p$ in the prime factorization of the LCM.
+
+\subsubsection*{Objective Function}
+
+If the LCM is represented as
+\[
+K = \prod_{p \in P} p^{e_p},
+\]
+then minimizing $K$ is equivalent to minimizing its logarithm:
+\[
+\min \sum_{p \in P} e_p \log(p).
+\]
+This transformation preserves optimality while making the objective linear in the decision variables.
+
+\subsubsection*{Constraints}
+
+For each integer $a_i$ in the input set and each prime $p$, let $v_p(a_i)$ denote the exponent of $p$ in the prime factorization of $|a_i|$. Then the exponent selected for the LCM must be at least as large as the exponent appearing in every input:
+\[
+e_p \geq v_p(a_i), \qquad \forall i,\ \forall p \in P.
+\]
+This single set of constraints guarantees that the resulting number is divisible by every element of the set and is positive.
+
+\subsection*{Results}
+
+For the random instance generated with seed 2026, the generated set was
+\[
+D = \{-70, -19, 28, 31, 65, -74, -43, 53, 59, 42\}.
+\]
+
+The optimal solution found by the Integer Programming model was:
+\[
+\mathrm{LCM}(D) = 15{,}999{,}484{,}808{,}580.
+\]
+
+This result was also verified using Python's built-in \texttt{math.lcm} function, and both outputs matched exactly.
+
+\subsection*{Computational Comparison}
+
+The measured runtimes for computing the LCM of the set $D$ were:
+\begin{itemize}
+    \item Integer Programming solve time: $0.0003$ seconds
+    \item Python \texttt{math.lcm} runtime: $0.000002$ seconds
+\end{itemize}
+
+The relative difference is approximately $146.38$x. Python's built-in implementation is orders of magnitude faster. This is expected because \texttt{math.lcm} uses a dedicated, highly specialized mathematical algorithm (based on Euclid's algorithm for GCD), while IP solvers are general-purpose optimization tools that formulate a mathematical problem and explore the feasible region.
+
+\subsection*{GCD Connection}
+
+The following well-known identity links the LCM and GCD of two nonzero integers:
+\[
+LCM(a_1,a_2)\cdot GCD(a_1,a_2)=|a_1a_2|.
+\]
+
+Therefore, once the LCM of two integers has been computed using our optimization model, the GCD can be obtained directly as
+\[
+GCD(a_1,a_2)=\frac{|a_1a_2|}{LCM(a_1,a_2)}.
+\]
+
+This shows that the IP-based LCM model can also be used indirectly to determine the greatest common divisor.
+
+% ==================== QUESTION 2 ====================
+\section*{Question 2: The Magnetic Field Puzzle}
+\addcontentsline{toc}{section}{Question 2: The Magnetic Field Puzzle}
+
+\subsection*{Problem Description}
+
+The Magnetic Field Puzzle is a logic puzzle defined on a rectangular grid partitioned into dominoes. Each domino may be assigned one of three patterns: $(+,-)$, $(-,+)$, or $(x,x)$, where $x$ denotes a neutral cell. In addition to domino consistency, the puzzle includes row and column counts for positive and negative poles, and orthogonally adjacent cells may not contain the same sign.
+
+\subsection*{Mathematical Formulation}
+
+\subsubsection*{Decision Variables}
+For each cell $(i,j)$:
+\begin{itemize}
+    \item $x_{i,j}^{+}=1$ if cell $(i,j)$ contains a positive pole, $0$ otherwise.
+    \item $x_{i,j}^{-}=1$ if cell $(i,j)$ contains a negative pole, $0$ otherwise.
+\end{itemize}
+
+For each domino $d$:
+\begin{itemize}
+    \item $z_d^{pm}=1$ if domino $d$ is assigned $(+,-)$,
+    \item $z_d^{mp}=1$ if domino $d$ is assigned $(-,+)$,
+    \item $z_d^{xx}=1$ if domino $d$ is assigned $(x,x)$.
+\end{itemize}
+
+\subsubsection*{Constraints}
+\textbf{Domino consistency constraints:} The sign assignment of each cell is linked to the selected state of the domino it belongs to.
+
+\textbf{Adjacency constraints:} For any pair of orthogonally adjacent cells $(i,j)$ and $(n_i,n_j)$,
+\[
+x_{i,j}^{s}+x_{n_i,n_j}^{s} \leq 1, \qquad s \in \{+,-\}.
+\]
+
+\textbf{Count constraints:} The total number of positive and negative poles in each row and column must match the given clues exactly.
+
+\subsection*{Results}
+
+The obtained solution for the provided $5\times 6$ puzzle (Figure 1 instance) is shown below:
+
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+x & x & - & + & - & + \\
+\hline
++ & - & + & - & + & - \\
+\hline
+- & + & - & + & - & x \\
+\hline
++ & - & + & x & x & x \\
+\hline
+- & + & x & x & + & - \\
+\hline
+\end{array}
+\]
+
+The solution satisfies all adjacency and clue constraints.
+
+\subsection*{Eliminating Alternative Solutions (Inequality Cut Algorithm)}
+
+If alternative solutions might exist, an additional cut can be introduced to exclude the currently found optimal arrangement while leaving all other feasible assignments available. 
+
+Here is the explicit step-by-step algorithm to construct this no-good cut:
+\begin{enumerate}
+    \item \textbf{Solve the Initial Model:} Run the optimization solver on the base IP formulation to find an optimal binary variable assignment.
+    \item \textbf{Identify Non-Zero Domino Variables:} Retrieve the optimal solution values. Let $S_{pm}$ be the set of dominoes where $z_d^{pm} = 1$, $S_{mp}$ be the set of dominoes where $z_d^{mp} = 1$, and $S_{xx}$ be the set of dominoes where $z_d^{xx} = 1$. Let $N$ be the total number of dominoes in the puzzle.
+    \item \textbf{Construct the Cut Inequality:} Formulate the following linear constraint:
+    \[
+    \sum_{d \in S_{pm}} z_d^{pm} + \sum_{d \in S_{mp}} z_d^{mp} + \sum_{d \in S_{xx}} z_d^{xx} \leq N - 1
+    \]
+    \item \textbf{Add the Constraint:} Append this new inequality to the existing set of constraints in the model.
+    \item \textbf{Re-solve the Model:} Run the solver again. If it finds a solution, an alternative valid arrangement exists. If the model becomes infeasible, the original arrangement was unique.
+\end{enumerate}
+
+% ==================== QUESTION 3 ====================
+\section*{Question 3: Image Segmentation Using IP}
+\addcontentsline{toc}{section}{Question 3: Image Segmentation Using IP}
+
+\subsection*{Problem Description}
+The task is to segment the ``Little Soldier'' image of size $13\times 20$ into foreground and background by using an Integer Programming model. 
+
+\subsection*{Model Design Choices}
+
+We explored segmentation across multiple provided background variants. Below are the unique combinations and mathematical functions utilized.
+
+\subsubsection*{Distance Metric}
+We used the Chebyshev distance ($L_{\infty}$ norm) to measure color dissimilarity between a pixel's color $c(i,j)$ and the reference background color $c_{BG}$:
+\[
+d(x,y)=\max_k |x_k-y_k|.
+\]
+
+\subsubsection*{Penalty Functions}
+To balance color matching with image smoothness, we designed the following custom penalty functions based on the normalized distance $d$:
+
+\begin{itemize}
+    \item \textbf{Foreground Penalty ($f_{ij}$):} 
+    \[ f_{ij}=100e^{-5d}+10(1-d) \]
+    High when the pixel is close to the background color.
+    \item \textbf{Background Penalty ($b_{ij}$):} 
+    \[ b_{ij}=50d^2+5d \]
+    High when the pixel is distant from the background color.
+    \item \textbf{Smoothness Penalty ($s_{(i,j),(u,v)}$):} 
+    \[ s_{(i,j),(u,v)} = 30e^{-2d^2}+2(1-d) \]
+    High when adjacent pixels are similar, discouraging them from receiving different labels.
+\end{itemize}
+
+\subsection*{Mathematical Formulation}
+
+\subsubsection*{Decision Variables}
+For each pixel $(i,j)$, let $x_{ij}=1$ if assigned to the foreground, and $0$ if background. For each neighboring pair $((i,j),(u,v))$, let $y_{ijuv}$ represent $|x_{ij}-x_{uv}|$.
+
+\subsubsection*{Objective Function \& Constraints}
+The objective is to minimize the total segmentation cost:
+\[
+\min \sum_{(i,j)} \left[f_{ij}x_{ij}+b_{ij}(1-x_{ij})\right] +\sum_{((i,j),(u,v))} s_{ijuv}y_{ijuv}.
+\]
+Subject to linearization constraints:
+\[
+y_{ijuv}\geq x_{ij}-x_{uv}, \qquad y_{ijuv}\geq x_{uv}-x_{ij}.
+\]
+
+\subsection*{Results}
+
+The segmentation successfully separated the foreground object from the background across all variants. The resulting Intersection over Union (IoU) score measured against the ground-truth was:
+\[
+IoU = 1.000
+\]
+
+\subsection*{Discussion (GIGO Principle)}
+
+According to the identity $x^* \in \arg\min c^\top x \mid Ax = b, x \in X$, the optimization engine returns a mathematically "perfect" solution that optimally minimizes the given coefficients. However, a 0.00\% optimality gap with an IoU $< 1$ can occur due to the Garbage In-Garbage Out (GIGO) principle. 
+
+If the selected distance metric or the mathematical penalty functions do not accurately reflect the visual perception of the foreground, the resulting objective function coefficients ($c$) will be flawed. The IP model blindly minimizes the cost structure provided to it; an "imperfect" segmentation simply means the cost structure did not appropriately align with the ground truth.
+
+% ==================== QUESTION 4 ====================
+\section*{Question 4: Water Jug Riddle}
+\addcontentsline{toc}{section}{Question 4: Water Jug Riddle}
+
+\subsection*{Graph Representation and Dijkstra's Algorithm}
+
+\subsubsection*{State Definition and Valid Actions}
+A state is represented by $(j_3,j_5)$, where $j_3\in\{0,1,2,3\}$ and $j_5\in\{0,1,2,3,4,5\}$. 
+The valid actions include filling, emptying, and transferring water between the jugs, provided they alter the current state. Each action takes 49 seconds. 
+
+\subsubsection*{Goal States}
+The objective is to obtain exactly 4 gallons. Since the 3-gallon jug cannot hold this amount, the goal states are defined as all states where $j_5 = 4$.
+
+\subsubsection*{Shortest Path Results}
+Dijkstra's Algorithm yielded a shortest path of $6$ actions, totaling $294$ seconds (4.9 minutes). Since $294 < 300$, \textbf{they will disarm the bomb in time.}
+
+The optimal state sequence from the initial state $(0,0)$ to the goal state is:
+\[
+(0,0)\rightarrow(0,5)\rightarrow(3,2)\rightarrow(0,2)\rightarrow(2,0)\rightarrow(2,5)\rightarrow(3,4).
+\]
+
+\subsection*{Dynamic Programming (Value Iteration)}
+
+\subsubsection*{Recursive Equation (SSP Framework)}
+Under the Stochastic Shortest Path framework, for a deterministic environment, the recursive equation is:
+\[
+V(s)=\min_{a\in A(s)}\left[49 + V(s')\right],
+\]
+for non-goal states $s$, and $V(s)=0$ for goal states. Here, $s'$ is the deterministic next state resulting from action $a$.
+
+\subsubsection*{Results and Policy}
+The Value Iteration algorithm converged in $8$ iterations. The optimal policy exactly reproduced the $6$-step sequence found by Dijkstra's algorithm. The minimum time required is again verified to be $294$ seconds.
+
+\subsection*{Number Theory Connection}
+
+\subsubsection*{Linear Diophantine Equation}
+The pouring of water mathematically corresponds to a Linear Diophantine Equation:
+\[
+a_1x_1+a_2x_2=b
+\]
+Here, $x_1$ and $x_2$ represent the net integer occurrences of filling or emptying actions related to each jug capacity. This equation only has integer solutions if the target $b$ is a multiple of $GCD(a_1, a_2)$.
+
+\subsubsection*{IP Formulation for GCD}
+Utilizing B\'ezout's Identity, we formulated an IP model to minimize $d > 0$ such that $a_1x_1+a_2x_2=d$, which corresponds to the GCD. For the parameters $a_1=976$ and $a_2=1224$, the IP model successfully returned:
+\[
+GCD(976,1224)=8.
+\]
+
+% ==================== CONCLUSION ====================
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+This project successfully demonstrated the application of optimization models to a diverse set of technical problems. Through the LCM and GCD problems, we observed how number-theoretic concepts can be expressed within an Integer Programming framework. The Magnetic Field Puzzle showed how logical rules can be modeled using binary variables. The image segmentation task combined unary and pairwise penalties to separate objects cleanly. Finally, the Water Jug problem highlighted the strong connections between graph search algorithms, infinite-horizon Dynamic Programming, and Diophantine equations.
+
+% ==================== REFERENCES ====================
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{enumerate}[label={[}\arabic*{]}]
+    \item Karagöz, A. (2026). \textit{IE 303 Computing Project Description}. Bilkent University.
+    \item Ergül, U.K. (2026). \textit{Supplementary Note: Infinite-Horizon DP and Value Iteration}. Bilkent University.
+    \item Gurobi Optimization, LLC. (2024). \textit{Gurobi Optimizer Documentation}. Available at: \url{https://www.gurobi.com}
+    \item Python Software Foundation. (2024). \textit{Python Documentation}. Available at: \url{https://docs.python.org}
+    \item Pillow Library. (2024). \textit{Pillow Documentation}. Available at: \url{https://python-pillow.org}
+\end{enumerate}
+
+\end{document}
